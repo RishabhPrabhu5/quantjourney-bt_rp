@@ -42,7 +42,8 @@ def _strategy_files() -> list[Path]:
 
 def test_python_files_have_quantjourney_header() -> None:
     missing = []
-    skipped_roots = {".git", ".venv", "reports", "plots"}
+    # Rishi_Research/ is personal research code in this fork, not QuantJourney-authored.
+    skipped_roots = {".git", ".venv", "reports", "plots", "Rishi_Research"}
 
     for path in _repo_files("*.py"):
         parts = path.relative_to(ROOT).parts
