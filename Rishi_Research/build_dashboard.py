@@ -28,7 +28,8 @@ STRATEGIES = [
      "Top-3 ETFs with positive 6-month momentum, scaled to 15% vol (max 2x); month-end",
      "weights", "SPY EFA EEM TLT IEF GLD DBC VNQ", (0.57, 10.96, -41.18, 621.23)),
     ("O17", "example_orders_17_monthly_rotation_orders", "Monthly Rotation (orders)",
-     "Top-3 ETFs by 6-month momentum, rotated monthly with market orders; per-share fees + 3 bps slippage",
+     "Top-3 ETFs by 6-month momentum, rotated monthly with market orders; "
+     "per-share fees + 3 bps slippage",
      "orders", "SPY EFA EEM TLT IEF GLD DBC VNQ", (0.53, 8.62, -28.23, 380.52)),
     ("W01", "example_weights_01_sma_daily", "Daily SMA Trend",
      "Hold each sector ETF while SMA(50) > SMA(200); daily",
@@ -98,7 +99,9 @@ def main() -> None:
                 "universe": universe,
                 "file": f"strategies/{folder}.py",
                 "engine": stats,
-                "published": dict(zip(("sharpe", "cagr", "maxdd", "total"), published, strict=True)),
+                "published": dict(
+                    zip(("sharpe", "cagr", "maxdd", "total"), published, strict=True)
+                ),
                 "turnover": _metric(folder, "Annualized turnover"),
                 "holdings": holdings,
                 "holdings_date": str(pd.to_datetime(weights.index[-1]).date()),
