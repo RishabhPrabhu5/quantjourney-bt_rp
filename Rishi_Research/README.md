@@ -29,7 +29,8 @@ illustrative historical backtests, not investable performance.
 | `STRATEGIES_EXPLAINED.md` | Plain-English walkthrough of each strategy: signals, portfolio construction, execution and costs (written in a separate session). |
 | `yahoo_data.py` | Free-data adapter: builds the engine's market-data payload from Yahoo Finance instead of QuantJourney Cloud. |
 | `run_top5.py` | Runs the five strategy files from `strategies/` **unchanged**, with only the data source swapped. |
-| `build_dashboard.py`, `dashboard_template.html` | Turn the run outputs into `dashboard/index.html`. |
+| `extract_trades.py` | Re-runs each strategy in-process and records every trade day: the decision bar, the indicator values behind it, target weights before/after, and fills with costs → `trades/<CODE>.json`. Feeds the dashboard's trade explorer. |
+| `build_dashboard.py`, `dashboard_template.html` | Turn the run outputs and trade logs into `dashboard/index.html`. |
 | `results/<strategy>/` | Engine outputs per strategy: equity curve, weights, metrics, summary, run metadata and log. The PNG plot packs (~9 MB each) are git-ignored; rerun to regenerate them. |
 
 ## Reproduce
@@ -38,6 +39,7 @@ illustrative historical backtests, not investable performance.
 python3 -m venv .venv && . .venv/bin/activate
 pip install -e ".[data]"
 python Rishi_Research/run_top5.py          # downloads Yahoo data into Rishi_Research/data/ (git-ignored) and runs all five
+python Rishi_Research/extract_trades.py    # trade-by-trade decision log for the explorer
 python Rishi_Research/build_dashboard.py   # rebuilds dashboard/index.html
 ```
 
@@ -54,3 +56,10 @@ No QuantJourney account or API key is required.
   has been revised since and the negative WTI crude print on 2020-04-20 is dropped.
 - The engine's console Sharpe uses a 2% risk-free rate; `metrics.csv` reports a Sharpe
   with 0% risk-free, so the two differ (e.g. W05: 0.45 vs 0.70). The dashboard uses 2%.
+- The engine's trade blotter records futures `TradeValue` as quantity × price, without
+  the contract multiplier, while weight-mode costs are charged on the multiplier-aware
+  notional. `extract_trades.py` reports traded value with the engine's
+  `_trade_notional()` so value and cost agree (1 bp).
+- W25 builds its averages on a union calendar of all six futures. A day one market was
+  closed becomes a gap in that series, and `rolling(252, min_periods=252)` then returns
+  NaN for the next year, so the strategy holds 0% in that future (visible for ZC=F).

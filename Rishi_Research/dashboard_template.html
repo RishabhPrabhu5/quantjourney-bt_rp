@@ -96,6 +96,36 @@ code { font-size: 12px; background: var(--mid); padding: 1px 5px; border-radius:
 .heat td:first-child { text-align: left; padding: 6px 8px; border: 0; }
 .scale { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--text-muted); margin-top: 8px; }
 .scale .ramp { width: 160px; height: 8px; border-radius: 4px; }
+.picker { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 12px; }
+.picker button { font: inherit; font-size: 13px; border: 1px solid var(--border); background: var(--surface-1); color: var(--text-secondary); border-radius: 8px; padding: 7px 12px; cursor: pointer; display: inline-flex; align-items: center; }
+.picker button[aria-pressed="true"] { background: var(--mid); color: var(--text-primary); font-weight: 650; border-color: var(--axis); }
+.picker button:focus-visible, .evt tr:focus-visible { outline: 2px solid var(--series-1); outline-offset: -2px; }
+.rule { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px 18px; font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; }
+.rule b { display: block; color: var(--text-primary); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 2px; }
+.tiles { display: flex; flex-wrap: wrap; gap: 10px 28px; margin: 6px 0 14px; }
+.tile .v { font-size: 20px; font-weight: 650; }
+.tile .k { font-size: 12px; color: var(--text-muted); }
+.heatwrap { position: relative; }
+.heatwrap canvas { display: block; width: 100%; cursor: crosshair; }
+.xp { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 18px; margin-top: 14px; }
+@media (max-width: 900px) { .xp { grid-template-columns: 1fr; } }
+.evtbar { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; font-size: 12.5px; color: var(--text-secondary); }
+.evtlist { max-height: 460px; overflow: auto; border: 1px solid var(--grid); border-radius: 8px; }
+.evt th { position: sticky; top: 0; background: var(--surface-1); z-index: 1; }
+.evt td { white-space: normal; vertical-align: top; text-align: left; }
+.evt td.n { text-align: right; white-space: nowrap; }
+.evt tr { cursor: pointer; }
+.evt tr:hover td { background: var(--mid); }
+.evt tr[aria-selected="true"] td { background: var(--mid); }
+.evt tr[aria-selected="true"] td:first-child { box-shadow: inset 3px 0 0 var(--series-1); }
+.evt tr { scroll-margin-top: 40px; }
+.chip { display: inline-block; font-size: 11.5px; padding: 1px 6px; border-radius: 10px; border: 1px solid var(--border); margin: 1px 3px 1px 0; white-space: nowrap; }
+.chip.in { color: var(--good); } .chip.out { color: var(--bad); } .chip.flip { color: var(--text-primary); }
+.detail h3 { font-size: 14px; margin: 0 0 4px; }
+.detail .why { font-size: 13px; color: var(--text-primary); margin: 6px 0 10px; padding: 8px 10px; background: var(--mid); border-radius: 8px; }
+.detail table { font-size: 12.5px; margin-bottom: 12px; }
+.detail .meta { color: var(--text-muted); font-size: 12px; }
+.muted { color: var(--text-muted); }
 </style>
 </head>
 <body>
@@ -121,6 +151,23 @@ code { font-size: 12px; background: var(--mid); padding: 1px 5px; border-radius:
     <p class="sub">Log scale, so equal vertical distances mean equal percentage moves. Each line starts at $100 on the first day of the window.</p>
     <div class="legend" id="legendEq"></div>
     <div class="chart" id="eq"></div>
+  </section>
+
+  <section class="card" id="explorer">
+    <h2>Trade explorer: when each strategy traded, and why</h2>
+    <p class="sub">Pick a strategy. The heatmap shows what it held each week (blue = long, red = short; darker = bigger weight). Ticks above it mark trade days. Click the heatmap or a row in the list to see the indicator values behind the decision and the fills it produced. Scoped to the window selected at the top.</p>
+    <div class="picker" id="picker" role="group" aria-label="Strategy"></div>
+    <div class="rule" id="rule"></div>
+    <div class="tiles" id="tiles"></div>
+    <div class="heatwrap chart"><canvas id="heatcv" height="240" aria-label="Weekly holdings heatmap"></canvas></div>
+    <div class="scale"><span id="hsLo"></span><span class="ramp" id="ramp3"></span><span id="hsHi"></span><span style="margin-left:14px">▮ signal change &nbsp; <span class="muted">▮ resize only</span></span></div>
+    <div class="xp">
+      <div>
+        <div class="evtbar"><label><input type="checkbox" id="onlySignals"> Show signal changes only</label><span id="evtCount"></span></div>
+        <div class="evtlist"><table class="evt" id="evt"></table></div>
+      </div>
+      <div class="detail" id="detail"></div>
+    </div>
   </section>
 
   <section class="card">
@@ -547,9 +594,179 @@ function renderNotes() {
   items.forEach(s => ul.appendChild(el("li", {}, s)));
 }
 
+// ---------- trade explorer ----------
+const TR = DATA.trades;
+const RULES = {
+  W25: { signal: "For each future: long when its 63-day average is above its 252-day average, short when below.", timing: "Decided at the close before the last business day of each month; trades at that month-end close.", sizing: "Weight ∝ trend sign / 63-day volatility, scaled to 100% gross, then ×0.95 cash buffer. Calmer markets get bigger positions.", costs: "Engine default: 1 bp of traded value. Price-return proxy: no roll costs, multipliers or margin." },
+  W18: { signal: "Rank 8 ETFs by 6-month (126-day) return; hold the top 3 that are positive. If none are positive, hold cash.", timing: "Decided at the close before each business month-end; trades at the month-end close.", sizing: "Equal weight (max 40% each), then a volatility target scales the whole book toward 15% annual vol (42-day lookback, up to 2× leverage), ×0.95 cash buffer.", costs: "Engine default: 1 bp of traded value. Leverage pays no financing cost." },
+  O17: { signal: "On the first bar of each month, rank 8 ETFs by 6-month return and target the top 3 (no positivity filter).", timing: "Decision at that bar's close; market orders fill at the next bar's open.", sizing: "Sell any holding that dropped out of the top 3; buy each new entrant with whole shares worth NAV ÷ 3. Holdings that stay are not resized.", costs: "Explicit: $0.005/share (min $1 per order) + 3 bps slippage on every fill." },
+  W01: { signal: "For each of 9 sector ETFs: hold while the 50-day average is above the 200-day average; exit when it falls below.", timing: "Every day: target from the previous close, trade at today's close.", sizing: "Equal weight across the active ETFs (max 25% each), ×0.95 cash buffer. Daily rebalancing also trims winners back to equal weight.", costs: "Engine default: 1 bp of traded value." },
+  W05: { signal: "No timing signal: always invested in all 8 ETFs once 63 days of history exist.", timing: "Decided at the close before each business month-end; trades at the month-end close.", sizing: "Weight ∝ 1 / 63-day volatility (max 35% each), ×0.95 cash buffer. Bonds get the most, emerging markets and commodities the least.", costs: "Engine default: 1 bp of traded value." },
+};
+const IND_LABEL = { SMA50: "SMA 50", SMA200: "SMA 200", Mom6m: "6m return", SMA63: "SMA 63", SMA252: "SMA 252", Vol63: "63d vol" };
+let xCode = CODES[0], xEvent = null;
+const money = v => v === null || v === undefined ? "–" : (Math.abs(v) >= 1e6 ? `$${(v / 1e6).toFixed(2)}M` : Math.abs(v) >= 1e4 ? `$${(v / 1e3).toFixed(0)}k` : `$${v.toFixed(v < 100 ? 2 : 0)}`);
+function winDates() { const [a, b] = win.range(xCode); return [DATA.dates[a], DATA.dates[b]]; }
+function eventsInWindow() {
+  const [a, b] = winDates(); const only = document.getElementById("onlySignals").checked;
+  return TR[xCode].events.filter(e => e.date >= a && e.date <= b && (!only || e.kind === "signal"));
+}
+function renderPicker() {
+  const box = document.getElementById("picker"); box.replaceChildren();
+  for (const c of CODES) {
+    const b = el("button", { type: "button", "aria-pressed": c === xCode ? "true" : "false" });
+    b.appendChild(keyEl(c)); b.appendChild(document.createTextNode(`${c} · ${NAME[c]}`));
+    b.addEventListener("click", () => { xCode = c; xEvent = null; renderPicker(); renderExplorer(); });
+    box.appendChild(b);
+  }
+}
+function renderRule() {
+  const r = RULES[xCode], box = document.getElementById("rule"); box.replaceChildren();
+  for (const [k, v] of [["Entry / exit signal", r.signal], ["When it trades", r.timing], ["Position sizing", r.sizing], ["Costs", r.costs]]) {
+    const d = el("div"); d.appendChild(el("b", {}, k)); d.appendChild(document.createTextNode(v)); box.appendChild(d);
+  }
+}
+function renderTiles(evs) {
+  const t = TR[xCode], s = t.summary, box = document.getElementById("tiles"); box.replaceChildren();
+  const [a, b] = winDates();
+  const allIn = t.events.filter(e => e.date >= a && e.date <= b);
+  const value = allIn.reduce((p, e) => p + (e.value || 0), 0), cost = allIn.reduce((p, e) => p + (e.cost || 0), 0);
+  const tiles = [
+    [String(allIn.filter(e => e.kind === "signal").length), "signal-change days"],
+    ...(xCode === "W01" ? [] : [[String(allIn.length), "trade days"]]),
+    [money(value), "traded value"],
+    [money(cost), `costs (${(cost / s.initial_capital * 100).toFixed(2)}% of starting capital)`],
+  ];
+  if (xCode === "W01") tiles.push([String(s.maintenance_days), `daily re-equalising trade days (full history, ${money(s.maintenance_cost)} costs)`]);
+  for (const [v, k] of tiles) { const d = el("div", { class: "tile" }); d.append(el("div", { class: "v" }, v), el("div", { class: "k" }, k)); box.appendChild(d); }
+}
+let heatGeom = null;
+function renderHeat() {
+  const t = TR[xCode], cv = document.getElementById("heatcv");
+  const [a, b] = winDates();
+  const idx = t.heat.dates.map((d, i) => [d, i]).filter(([d]) => d >= a && d <= b).map(x => x[1]);
+  const assets = t.assets;
+  const rowH = assets.length > 8 ? 20 : 24, top = 18, left = 64, bottom = 22;
+  const cssW = cv.clientWidth || 1100, cssH = top + rowH * assets.length + bottom;
+  const dpr = window.devicePixelRatio || 1;
+  cv.width = cssW * dpr; cv.height = cssH * dpr; cv.style.height = cssH + "px";
+  const ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, cssW, cssH);
+  const css = n => getComputedStyle(document.querySelector(".viz-root")).getPropertyValue(n).trim();
+  const plotW = cssW - left - 8, n = Math.max(1, idx.length), cw = plotW / n;
+  let cap = 0; for (const as of assets) for (const i of idx) cap = Math.max(cap, Math.abs(t.heat.w[as][i] || 0));
+  cap = Math.max(0.05, Math.ceil(cap * 20) / 20);
+  let hasShort = false; for (const as of assets) for (const i of idx) if ((t.heat.w[as][i] || 0) < -1e-4) hasShort = true;
+  document.getElementById("hsLo").textContent = hasShort ? `−${Math.round(cap * 100)}% short` : "0% (not held)";
+  document.getElementById("hsHi").textContent = `+${Math.round(cap * 100)}% long`;
+  document.getElementById("ramp3").style.background = hasShort ? rampCss()
+    : `linear-gradient(90deg, ${[0, .2, .4, .6, .8, 1].map(k => divColor(k, 1).bg).join(",")})`;
+  ctx.font = "11px system-ui, -apple-system, Segoe UI, sans-serif"; ctx.textBaseline = "middle";
+  assets.forEach((as, r) => {
+    ctx.fillStyle = css("--text-secondary"); ctx.textAlign = "right"; ctx.fillText(as, left - 8, top + r * rowH + rowH / 2);
+    idx.forEach((i, k) => {
+      const v = t.heat.w[as][i] || 0;
+      ctx.fillStyle = Math.abs(v) < 1e-4 ? css("--grid") : divColor(v, cap).bg;
+      ctx.fillRect(left + k * cw, top + r * rowH + 1, Math.max(1, cw + 0.3), rowH - 2);
+    });
+  });
+  // Trade ticks.
+  const dates = idx.map(i => t.heat.dates[i]);
+  const xOf = d => { let lo = 0, hi = dates.length - 1; while (lo < hi) { const m = (lo + hi) >> 1; if (dates[m] < d) lo = m + 1; else hi = m; } return left + lo * cw + cw / 2; };
+  for (const e of t.events) {
+    if (e.date < a || e.date > b) continue;
+    ctx.fillStyle = e.kind === "signal" ? css("--text-primary") : css("--text-muted");
+    ctx.fillRect(xOf(e.date) - 0.75, e.kind === "signal" ? 2 : 8, 1.5, e.kind === "signal" ? 12 : 6);
+  }
+  if (xEvent) { ctx.strokeStyle = css("--series-1"); ctx.lineWidth = 2; const x = xOf(xEvent.date); ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, top + rowH * assets.length); ctx.stroke(); }
+  // Year labels.
+  ctx.fillStyle = css("--text-muted"); ctx.textAlign = "center"; let lastY = "";
+  const span = dates.length ? (+dates[dates.length - 1].slice(0, 4)) - (+dates[0].slice(0, 4)) : 0;
+  const step = span > 14 ? 3 : span > 7 ? 2 : 1;
+  dates.forEach((d, k) => { const y = d.slice(0, 4); if (y !== lastY) { lastY = y; if (+y % step === 0 || span < 2) ctx.fillText(span < 2 ? d.slice(0, 7) : y, left + k * cw, cssH - 8); } });
+  heatGeom = { left, top, rowH, cw, idx, assets, dates };
+}
+function heatHit(evt) {
+  const g = heatGeom; if (!g) return null; const cv = document.getElementById("heatcv"), p = cv.getBoundingClientRect();
+  const x = evt.clientX - p.left, y = evt.clientY - p.top;
+  const k = Math.floor((x - g.left) / g.cw), r = Math.floor((y - g.top) / g.rowH);
+  if (k < 0 || k >= g.idx.length) return null;
+  return { k, r: r >= 0 && r < g.assets.length ? r : null, date: g.dates[k] };
+}
+function renderEvents() {
+  const evs = eventsInWindow(), t = document.getElementById("evt"); t.replaceChildren();
+  document.getElementById("evtCount").textContent = `${evs.length} trade days in window`;
+  const head = el("tr"); ["Date", "What changed", "Traded", "Cost"].forEach((h, i) => head.appendChild(el("th", i > 1 ? { class: "n" } : {}, h))); t.appendChild(head);
+  if (!xEvent || !evs.includes(xEvent)) xEvent = evs[evs.length - 1] || null;
+  for (const e of [...evs].reverse()) {
+    const tr = el("tr", { tabindex: 0, "aria-selected": e === xEvent ? "true" : "false" });
+    tr.appendChild(el("td", { class: "n" }, e.date));
+    const td = el("td");
+    if (!e.changes.length) td.appendChild(el("span", { class: "muted" }, xCode === "O17" ? "rotation" : "resize only"));
+    for (const c of e.changes) {
+      const side = (e.assets.find(r => r.asset === c.asset) || {}).target;
+      const label = c.kind === "entered" ? `+ ${c.asset}${side < 0 ? " short" : ""}` : c.kind === "exited" ? `− ${c.asset}` : `⇄ ${c.asset} ${side > 0 ? "long" : "short"}`;
+      td.appendChild(el("span", { class: "chip " + (c.kind === "entered" ? "in" : c.kind === "exited" ? "out" : "flip") }, label));
+    }
+    tr.appendChild(td); tr.appendChild(el("td", { class: "n" }, money(e.value))); tr.appendChild(el("td", { class: "n" }, money(e.cost)));
+    const pick = () => { xEvent = e; renderEvents(); renderHeat(); renderDetail(); };
+    tr.addEventListener("click", pick); tr.addEventListener("keydown", k => { if (k.key === "Enter" || k.key === " ") { k.preventDefault(); pick(); } });
+    t.appendChild(tr);
+  }
+  const sel = t.querySelector('tr[aria-selected="true"]'); if (sel) sel.scrollIntoView({ block: "nearest" });
+}
+function renderDetail() {
+  const box = document.getElementById("detail"); box.replaceChildren();
+  const e = xEvent; if (!e) { box.appendChild(el("p", { class: "muted" }, "No trades in this window.")); return; }
+  const t = TR[xCode];
+  box.appendChild(el("h3", {}, `${xCode} · traded ${e.date}`));
+  box.appendChild(el("div", { class: "meta" }, t.timing === "orders" ? `Decision at the close of ${e.decision}; market orders filled at the next open (${e.date}).` : `Target computed from the close of ${e.decision}; traded at the close of ${e.date}.`));
+  box.appendChild(el("div", { class: "why" }, e.reason));
+  const gaps = e.assets.filter(r => Object.keys(IND_LABEL).some(k => k in r && r[k] === null)).map(r => r.asset);
+  if (gaps.length) box.appendChild(el("div", { class: "meta" }, `– = indicator not computable for ${gaps.join(", ")}: not enough history yet, or a missing bar inside the lookback window (one non-trading day on the shared calendar blanks the whole average). The strategy holds 0% there until the window is clean.`));
+  const indKeys = Object.keys(e.assets[0]).filter(k => IND_LABEL[k]);
+  const tb = el("table"); const h = el("tr");
+  ["Asset", ...indKeys.map(k => IND_LABEL[k]), "Weight before", "Target", "Change"].forEach((x, i) => h.appendChild(el("th", i ? {} : {}, x))); tb.appendChild(h);
+  const rows = [...e.assets].sort((a, b) => Math.abs(b.target || 0) - Math.abs(a.target || 0) || (b.Mom6m ?? 0) - (a.Mom6m ?? 0));
+  for (const r of rows) {
+    const tr = el("tr"); tr.appendChild(el("td", {}, r.asset));
+    for (const k of indKeys) { const v = r[k]; tr.appendChild(el("td", {}, v === null || v === undefined ? "–" : (k === "Mom6m" || k === "Vol63") ? pct(v) : v.toFixed(2))); }
+    const d = (r.target || 0) - (r.before || 0);
+    tr.appendChild(el("td", {}, pct(r.before || 0))); tr.appendChild(el("td", {}, pct(r.target || 0)));
+    tr.appendChild(el("td", { class: Math.abs(d) < 5e-4 ? "muted" : d > 0 ? "pos" : "neg" }, Math.abs(d) < 5e-4 ? "–" : signPct(d)));
+    tb.appendChild(tr);
+  }
+  box.appendChild(el("div", { class: "scroll" })).appendChild(tb);
+  box.appendChild(el("div", { class: "meta" }, `Fills (${e.n_trades})${t.timing === "orders" ? " — cost = commission + slippage" : " — cost = 1 bp of traded value"}`));
+  const fb = el("table"); const fh = el("tr"); ["Asset", "Side", "Quantity", "Price", "Value", "Cost"].forEach(x => fh.appendChild(el("th", {}, x))); fb.appendChild(fh);
+  for (const f of e.fills) {
+    const tr = el("tr");
+    [f.asset, f.side, f.qty?.toLocaleString(), f.price?.toFixed(2), money(f.value), money((f.cost || 0) + (f.slip || 0))].forEach((v, i) => tr.appendChild(el("td", i === 1 ? { class: f.side === "buy" ? "pos" : "neg" } : {}, String(v ?? "–"))));
+    fb.appendChild(tr);
+  }
+  box.appendChild(el("div", { class: "scroll" })).appendChild(fb);
+}
+function renderExplorer() { renderRule(); renderTiles(); renderEvents(); renderHeat(); renderDetail(); }
+(function wireExplorer() {
+  const cv = document.getElementById("heatcv");
+  cv.addEventListener("pointermove", e => {
+    const h = heatHit(e); if (!h || h.r === null) { hideTip(); return; }
+    const t = TR[xCode], as = heatGeom.assets[h.r], v = t.heat.w[as][heatGeom.idx[h.k]] || 0;
+    showTip(e, `Week ending ${h.date}`, [[xCode, as, signPct(v)], [null, "Click", "show nearest trade"]]);
+  });
+  cv.addEventListener("pointerleave", hideTip);
+  cv.addEventListener("click", e => {
+    const h = heatHit(e); if (!h) return; const evs = eventsInWindow(); if (!evs.length) return;
+    let best = evs[0]; for (const ev of evs) if (Math.abs(Date.parse(ev.date) - Date.parse(h.date)) < Math.abs(Date.parse(best.date) - Date.parse(h.date))) best = ev;
+    xEvent = best; renderEvents(); renderHeat(); renderDetail();
+  });
+  document.getElementById("onlySignals").addEventListener("change", () => { xEvent = null; renderExplorer(); });
+  let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(renderHeat, 120); });
+  renderPicker();
+})();
+
 function renderAll() {
   document.getElementById("windowNote").textContent = win.note();
-  renderKPI(); renderEquity(); renderDD(); renderYears(); renderCorr();
+  renderKPI(); renderEquity(); renderDD(); renderYears(); renderCorr(); renderExplorer();
 }
 document.getElementById("subtitle").textContent =
   `Five example strategies from the QuantJourney Backtester, re-run locally on Yahoo Finance data · data through ${fmtD(dates[endIdx])} · built ${DATA.generated}`;

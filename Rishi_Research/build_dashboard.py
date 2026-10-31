@@ -1,8 +1,9 @@
 """Build Rishi_Research/dashboard/index.html from the top-5 backtest results.
 
 Reads the engine outputs written by run_top5.py (results/*/*/equity_curve.csv,
-weights.csv, metrics.csv, run.log) plus the cached Yahoo SPY series, and writes a
-single self-contained HTML page (no network, no external JS).
+weights.csv, metrics.csv, run.log), the trade logs from extract_trades.py
+(trades/*.json) and the cached Yahoo SPY series, and writes a single
+self-contained HTML page (no network, no external JS).
 """
 
 from __future__ import annotations
@@ -137,6 +138,10 @@ def main() -> None:
         "benchmark": {"code": "SPY", "name": "SPY (S&P 500 ETF, total return)"},
         "generated": pd.Timestamp.now(tz="UTC").strftime("%Y-%m-%d"),
         "rf": 0.02,
+        "trades": {
+            code: json.loads((HERE / "trades" / f"{code}.json").read_text())
+            for code, *_ in STRATEGIES
+        },
     }
     template = (HERE / "dashboard_template.html").read_text()
     OUT.parent.mkdir(parents=True, exist_ok=True)
