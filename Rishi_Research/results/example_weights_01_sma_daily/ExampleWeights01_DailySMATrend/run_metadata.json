@@ -1,0 +1,64 @@
+{
+  "backtest_period": {
+    "end": "2026-01-01",
+    "start": "2000-01-03"
+  },
+  "backtester_version": "0.12.5",
+  "base_currency": "USD",
+  "benchmark": {
+    "name": "SPDR S&P 500 ETF Trust",
+    "symbol": "SPY"
+  },
+  "data_source": "yfinance",
+  "dataset_id": "yahoo-xlb-xle-xlf-xli-xlk-xlp-xlu-xlv-xly",
+  "execution_mode": "weights",
+  "granularity": "1d",
+  "initial_capital": 100000.0,
+  "instruments": [
+    "XLB",
+    "XLE",
+    "XLF",
+    "XLI",
+    "XLK",
+    "XLP",
+    "XLU",
+    "XLV",
+    "XLY"
+  ],
+  "metadata_generated_at": "2026-10-31T18:06:26.265749+00:00",
+  "no_reports": false,
+  "package_name": "quantjourney-bt",
+  "plot_dpi": 300,
+  "python": {
+    "executable": "/home/user/quantjourney-bt_rp/.venv/bin/python",
+    "implementation": "CPython",
+    "platform": "Linux-6.18.44-fc-v185-x86_64-with-glibc2.39",
+    "version": "3.13.18"
+  },
+  "quiet": false,
+  "rebalance_policy": "RebalancePolicy(freq=D)",
+  "reporting_frequency": "daily",
+  "run_started_at": "2026-10-31T18:06:00.605281+00:00",
+  "runtime_options": {
+    "QJ_LOG_LEVEL": "INFO",
+    "QJ_NO_REPORTS": "0",
+    "QJ_OUTPUT_DIR": "/home/user/quantjourney-bt_rp/Rishi_Research/results/example_weights_01_sma_daily",
+    "QJ_PLOT_DPI": null,
+    "QJ_QUIET": "0",
+    "QJ_REPORTING_FREQUENCY": null
+  },
+  "session_id": "yahoo-session",
+  "strategy_name": "ExampleWeights01_DailySMATrend",
+  "strategy_type": "Long / Cash",
+  "strict_data_fetch": true,
+  "strict_reporting": false,
+  "theme_plots": "quantjourney",
+  "timings_seconds": {
+    "calculation_seconds": 0.7279889739999135,
+    "data_fetch_seconds": 0.3778685290000112,
+    "data_processing_seconds": 2.5152095040000404,
+    "metadata_seconds": 0.002352075000089826,
+    "reporting_seconds": 22.037035061000097,
+    "total_before_archive_seconds": 25.658188603999974
+  }
+}

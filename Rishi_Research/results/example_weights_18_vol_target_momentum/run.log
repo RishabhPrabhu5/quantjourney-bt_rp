@@ -1,0 +1,65 @@
+[2026-10-31 18:05:15] [WARNING] [backtester] [Backtester] max_position_size accepted for report metadata only — not enforced (orders mode or custom risk_model supplied).
+[2026-10-31 18:05:15] [INFO] [backtester] [Backtester] Initialized: strategy=ExampleWeights18_VolTargetMomentum, instruments=['SPY', 'EFA', 'EEM', 'TLT', 'IEF', 'GLD', 'DBC', 'VNQ'], version=0.12.5, api=QuantJourney Cloud
+[2026-10-31 18:05:15] [INFO] [backtester] ═══ Running Cloud Strategy: ExampleWeights18_VolTargetMomentum ═══
+[2026-10-31 18:05:15] [INFO] [backtester] [Backtester] Data reconstructed: 8 instruments, 4780 dates, prices cols=['open', 'high', 'low', 'close', 'adj_close', 'volume']
+/home/user/quantjourney-bt_rp/backtester/risk/vol_target.py:81: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  weights.index.to_period(
+[2026-10-31 18:05:20] [INFO] [backtester] [Risk] Applied VolTargetModel(target=15%, lookback=42, max_lev=2.0) to weights
+[2026-10-31 18:05:20] [INFO] [backtester] [Rebalance] 229 rebalances (cal=229, drift=0, sig=0, cb=0) | avg 20.9 days between | policy=RebalancePolicy(freq=BME)
+[2026-10-31 18:05:21] [INFO] [backtester] Strategy folder set to: /home/user/quantjourney-bt_rp/Rishi_Research/results/example_weights_18_vol_target_momentum/ExampleWeights18_VolTargetMomentum
+[2026-10-31 18:05:21] [INFO] [backtester] Generating strategy performance analysis.
+[2026-10-31 18:05:21] [INFO] [backtester] Performance report saved to: /home/user/quantjourney-bt_rp/Rishi_Research/results/example_weights_18_vol_target_momentum/ExampleWeights18_VolTargetMomentum/performance_report.txt
+Section      Metric                      Value
+-----------  ----------------------  ---------
+Return       Annualized Return          10.96%
+             Total Return              621.24%
+             MTD                         1.59%
+             QTD                         9.13%
+             YTD                        45.97%
+             1Y                         45.26%
+             3Y Annualized              18.26%
+             5Y Annualized              15.50%
+Risk         Sharpe Ratio                 0.68
+             Sortino Ratio                0.94
+             Max Drawdown              -41.18%
+             Calmar Ratio                 0.27
+             Recovery Factor              0.27
+             Annualized Volatility      17.59%
+Consistency  Winning Days               53.08%
+             Winning Months             60.96%
+             Winning Quarters           65.79%
+             Winning Years              78.95%
+Trading      Average Daily Turnover      2.17%
+             Annualized Turnover       548.07%
+             Total Turnover          10395.97%
+
+[2026-10-31 18:05:38] [INFO] [backtester] [Backtester] Dashboard saved to /home/user/quantjourney-bt_rp/Rishi_Research/results/example_weights_18_vol_target_momentum/ExampleWeights18_VolTargetMomentum/dashboard.html
+[2026-10-31 18:05:38] [INFO] [backtester] [Backtester] Plot pack saved to /home/user/quantjourney-bt_rp/Rishi_Research/results/example_weights_18_vol_target_momentum/ExampleWeights18_VolTargetMomentum/plots (21 PNG files)
+[2026-10-31 18:05:38] [INFO] [backtester] Run metadata saved to /home/user/quantjourney-bt_rp/Rishi_Research/results/example_weights_18_vol_target_momentum/ExampleWeights18_VolTargetMomentum/run_metadata.json
+[2026-10-31 18:05:38] [INFO] [backtester] [Backtester] Runtime: fetch=0.25s | data=0.25s | calc=4.31s | reports=18.44s | archive=0.00s | total=23.26s
+[2026-10-31 18:05:38] [INFO] [backtester] ═══ Cloud Strategy ExampleWeights18_VolTargetMomentum completed ═══
+
+============================================================
+  Strategy: ExampleWeights18_VolTargetMomentum
+  Backtester: v0.12.5
+  Period:   2007-01-03 → 2025-12-31
+  Assets:   SPY, EFA, EEM, TLT, IEF, GLD, DBC, VNQ
+────────────────────────────────────────────────────────────
+  Initial NAV:  $    100,000.00
+  Final NAV:    $    721,235.06
+  Total Return:        621.24%
+  Ann. Volatility:      17.59%
+  Max Drawdown:        -41.18%
+  Sharpe Ratio:        0.5675
+────────────────────────────────────────────────────────────
+  Runtime Total:        23.26s
+  Data Fetch:            0.25s
+  Data Prep:             0.25s
+  Calculation:           4.31s
+  Reporting:            18.44s
+────────────────────────────────────────────────────────────
+  Rebalance Policy: RebalancePolicy(freq=BME)
+  Rebalances:             229
+  Avg Days Btw:          20.9
+============================================================
+

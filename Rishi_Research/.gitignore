@@ -1,0 +1,4 @@
+# Raw Yahoo downloads (re-fetched by yahoo_data.py)
+data/
+# Engine plot packs (~9 MB per strategy; regenerate with run_top5.py)
+results/**/plots/

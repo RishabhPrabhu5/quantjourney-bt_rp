@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rishi Research · Top-5 QuantJourney strategies</title>
+<style>
+.viz-root {
+  color-scheme: light;
+  --page: #f9f9f7; --surface-1: #fcfcfb;
+  --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #898781;
+  --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11,11,11,0.10);
+  --series-1: #2a78d6; --series-2: #eb6834; --series-3: #1baf7a; --series-4: #eda100; --series-5: #e87ba4;
+  --bench: #52514e; --mid: #f0efec;
+  --pos-1: #9ec5f4; --pos-2: #3987e5; --pos-3: #104281;
+  --neg-1: #f3b3b2; --neg-2: #e34948; --neg-3: #9b2524;
+  --good: #006300; --bad: #d03b3b;
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) .viz-root {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface-1: #1a1a19;
+    --text-primary: #f0efec; --text-secondary: #c3c2b7; --text-muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+    --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70; --series-4: #c98500; --series-5: #d55181;
+    --bench: #c3c2b7; --mid: #383835;
+    --pos-1: #184f95; --pos-2: #3987e5; --pos-3: #9ec5f4;
+    --neg-1: #7a2423; --neg-2: #e66767; --neg-3: #f3b3b2;
+    --good: #0ca30c; --bad: #e66767;
+  }
+}
+:root[data-theme="dark"] .viz-root {
+  color-scheme: dark;
+  --page: #0d0d0d; --surface-1: #1a1a19;
+  --text-primary: #f0efec; --text-secondary: #c3c2b7; --text-muted: #898781;
+  --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+  --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70; --series-4: #c98500; --series-5: #d55181;
+  --bench: #c3c2b7; --mid: #383835;
+  --pos-1: #184f95; --pos-2: #3987e5; --pos-3: #9ec5f4;
+  --neg-1: #7a2423; --neg-2: #e66767; --neg-3: #f3b3b2;
+  --good: #0ca30c; --bad: #e66767;
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+.viz-root { background: var(--page); color: var(--text-primary); min-height: 100vh;
+  font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; padding: 28px clamp(14px, 3vw, 40px) 60px; }
+.wrap { max-width: 1180px; margin: 0 auto; }
+h1 { font-size: 24px; margin: 0 0 4px; font-weight: 650; }
+h2 { font-size: 16px; margin: 0 0 2px; font-weight: 650; }
+.sub { color: var(--text-secondary); margin: 0 0 14px; }
+.card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 18px 18px 14px; margin: 16px 0; }
+.card .sub { font-size: 13px; }
+.filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 18px 0 4px; }
+.seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface-1); }
+.seg button { font: inherit; font-size: 13px; border: 0; background: transparent; color: var(--text-secondary); padding: 7px 12px; cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--border); }
+.seg button[aria-pressed="true"] { background: var(--mid); color: var(--text-primary); font-weight: 650; }
+.seg button:focus-visible, .themebtn:focus-visible { outline: 2px solid var(--series-1); outline-offset: -2px; }
+.themebtn { margin-left: auto; font: inherit; font-size: 13px; border: 1px solid var(--border); background: var(--surface-1); color: var(--text-secondary); border-radius: 8px; padding: 7px 12px; cursor: pointer; }
+.window-note { color: var(--text-muted); font-size: 12.5px; width: 100%; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { padding: 7px 8px; text-align: right; border-bottom: 1px solid var(--grid); white-space: nowrap; }
+th { color: var(--text-secondary); font-weight: 600; font-size: 12px; }
+th:first-child, td:first-child { text-align: left; }
+td { font-variant-numeric: tabular-nums; }
+tr.bench td { color: var(--text-secondary); }
+.key { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 8px; }
+.key.dash { background: repeating-linear-gradient(90deg, var(--bench) 0 4px, transparent 4px 7px) !important; }
+.scroll { overflow-x: auto; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 12.5px; color: var(--text-secondary); margin: 8px 0 4px; }
+.chart { position: relative; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.axis text, .lbl { fill: var(--text-muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.tip { position: absolute; pointer-events: none; background: var(--surface-1); border: 1px solid var(--border); border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12); padding: 8px 10px; font-size: 12px; min-width: 150px; display: none; z-index: 5; }
+.tip .t { color: var(--text-secondary); margin-bottom: 4px; font-weight: 600; }
+.tip .r { display: flex; align-items: center; gap: 8px; justify-content: space-between; }
+.tip .r b { font-variant-numeric: tabular-nums; }
+.tip .r span { color: var(--text-secondary); display: flex; align-items: center; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 0 18px; }
+.mini h3 { font-size: 13px; margin: 10px 0 0; font-weight: 600; }
+.mini .meta { color: var(--text-muted); font-size: 12px; }
+.hold { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
+.hold h3 { font-size: 13px; margin: 0 0 6px; }
+.hrow { display: grid; grid-template-columns: 58px 1fr 56px; align-items: center; gap: 6px; font-size: 12px; margin: 3px 0; }
+.hrow .bar { height: 8px; background: var(--grid); border-radius: 4px; position: relative; }
+.hrow .bar i { position: absolute; top: 0; bottom: 0; border-radius: 4px; }
+.hrow .v { text-align: right; font-variant-numeric: tabular-nums; color: var(--text-secondary); }
+.notes { color: var(--text-secondary); font-size: 13px; }
+.notes li { margin: 4px 0; }
+code { font-size: 12px; background: var(--mid); padding: 1px 5px; border-radius: 4px; }
+.pos { color: var(--good); } .neg { color: var(--bad); }
+.heat td { text-align: center; padding: 0; border: 2px solid var(--surface-1); }
+.heat td div { padding: 6px 4px; border-radius: 4px; font-size: 12px; }
+.heat th { text-align: center; }
+.heat td:first-child { text-align: left; padding: 6px 8px; border: 0; }
+.scale { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--text-muted); margin-top: 8px; }
+.scale .ramp { width: 160px; height: 8px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div class="viz-root">
+<div class="wrap">
+  <h1>Top-5 QuantJourney strategies, re-run on free Yahoo data</h1>
+  <p class="sub" id="subtitle"></p>
+
+  <div class="filters" role="group" aria-label="Analysis window">
+    <div class="seg" id="windows"></div>
+    <button class="themebtn" id="theme" type="button">Toggle dark mode</button>
+    <div class="window-note" id="windowNote"></div>
+  </div>
+
+  <section class="card">
+    <h2>Performance summary</h2>
+    <p class="sub">Computed from each strategy's daily net-of-cost returns in the selected window. Sharpe and Sortino use a 2% risk-free rate (the engine's default). Sorted by Sharpe.</p>
+    <div class="scroll"><table id="kpi"></table></div>
+  </section>
+
+  <section class="card">
+    <h2>Growth of $100</h2>
+    <p class="sub">Log scale, so equal vertical distances mean equal percentage moves. Each line starts at $100 on the first day of the window.</p>
+    <div class="legend" id="legendEq"></div>
+    <div class="chart" id="eq"></div>
+  </section>
+
+  <section class="card">
+    <h2>Drawdowns from previous peak</h2>
+    <p class="sub">How far each strategy sat below its prior high. The dashed line is SPY over the same days.</p>
+    <div class="grid2" id="dd"></div>
+  </section>
+
+  <section class="card">
+    <h2>Calendar-year returns</h2>
+    <p class="sub">Partial years at the window edges are marked with *. Blue is a gain, red a loss.</p>
+    <div class="scroll"><table class="heat" id="years"></table></div>
+    <div class="scale"><span>−30%</span><span class="ramp" id="ramp1"></span><span>+30%</span></div>
+  </section>
+
+  <section class="card">
+    <h2>Correlation of daily returns</h2>
+    <p class="sub">Low correlation between strategies means combining them diversifies risk.</p>
+    <div class="scroll"><table class="heat" id="corr"></table></div>
+    <div class="scale"><span>−1</span><span class="ramp" id="ramp2"></span><span>+1</span></div>
+  </section>
+
+  <section class="card">
+    <h2>Latest target weights</h2>
+    <p class="sub" id="holdSub"></p>
+    <div class="hold" id="hold"></div>
+  </section>
+
+  <section class="card">
+    <h2>Reproduction check vs QuantJourney's published results</h2>
+    <p class="sub">Full configured period, as printed by the engine (v0.12.5) for this run, next to the numbers on backtester.quantjourney.cloud (engine 0.10.0).</p>
+    <div class="scroll"><table id="repro"></table></div>
+  </section>
+
+  <section class="card notes">
+    <h2>How this was produced</h2>
+    <ul id="notes"></ul>
+  </section>
+</div>
+<div class="tip" id="tip" role="status" aria-live="polite"></div>
+</div>
+
+<script>
+const DATA = /*__DATA__*/null;
+const RF = DATA.rf, TD = 252;
+const S = DATA.strategies;
+const CODES = S.map(s => s.code);
+const ALL = [...CODES, "SPY"];
+const NAME = Object.fromEntries(S.map(s => [s.code, s.name]));
+NAME.SPY = "SPY benchmark";
+const COLOR = Object.fromEntries(CODES.map((c, i) => [c, `var(--series-${i + 1})`]));
+COLOR.SPY = "var(--bench)";
+const dates = DATA.dates.map(d => new Date(d + "T00:00:00Z"));
+const N = dates.length;
+const R = DATA.returns;
+const NS = "http://www.w3.org/2000/svg";
+
+// First day each series is actually invested (skips indicator warm-up).
+const activeStart = {};
+for (const c of ALL) {
+  const r = R[c];
+  let i = r.findIndex(v => v !== null && v !== 0);
+  activeStart[c] = i < 0 ? 0 : Math.max(0, i - 1);
+}
+const lastIdx = c => { const r = R[c]; for (let i = N - 1; i >= 0; i--) if (r[i] !== null) return i; return N - 1; };
+const commonStart = Math.max(...CODES.map(c => activeStart[c]));
+const endIdx = Math.min(...ALL.map(lastIdx));
+const idxOnOrAfter = d => { const t = Date.parse(d + "T00:00:00Z"); const i = dates.findIndex(x => x.getTime() >= t); return i < 0 ? N - 1 : i; };
+const yearsBack = y => { const e = dates[endIdx]; const d = new Date(Date.UTC(e.getUTCFullYear() - y, e.getUTCMonth(), e.getUTCDate() + 1)); return dates.findIndex(x => x >= d); };
+const fmtD = d => d.toISOString().slice(0, 10);
+
+const WINDOWS = [
+  { id: "common", label: "Common window", note: () => `All five strategies invested: ${fmtD(dates[commonStart])} → ${fmtD(dates[endIdx])}. This is the fair comparison window.`, range: c => [commonStart, endIdx] },
+  { id: "full", label: "Each strategy's full period", note: () => "Each strategy from its first invested day to the end; periods differ (W25 starts in 2020, W01 in 2000), so compare with care. SPY runs over the longest period.", range: c => [c === "SPY" ? Math.min(...CODES.map(k => activeStart[k])) : activeStart[c], lastIdx(c)] },
+  { id: "y5", label: "Last 5 years", note: () => `${fmtD(dates[yearsBack(5)])} → ${fmtD(dates[endIdx])}`, range: c => [yearsBack(5), endIdx] },
+  { id: "y3", label: "Last 3 years", note: () => `${fmtD(dates[yearsBack(3)])} → ${fmtD(dates[endIdx])}`, range: c => [yearsBack(3), endIdx] },
+  { id: "y1", label: "Last 12 months", note: () => `${fmtD(dates[yearsBack(1)])} → ${fmtD(dates[endIdx])}`, range: c => [yearsBack(1), endIdx] },
+];
+let win = WINDOWS[0];
+
+// ---------- metrics ----------
+function slice(c) {
+  const [a, b] = win.range(c);
+  const out = [];
+  for (let i = a; i <= b; i++) { const v = R[c][i]; if (v !== null) out.push([i, i === a ? 0 : v]); }
+  return out;
+}
+function stats(c) {
+  const s = slice(c); const r = s.slice(1).map(x => x[1]);
+  if (r.length < 20) return null;
+  const n = r.length, mean = r.reduce((a, b) => a + b, 0) / n;
+  const sd = Math.sqrt(r.reduce((a, b) => a + (b - mean) ** 2, 0) / (n - 1));
+  const ex = r.map(x => x - RF / TD), exMean = mean - RF / TD;
+  const down = ex.filter(x => x < 0);
+  const dsd = Math.sqrt(down.reduce((a, b) => a + b * b, 0) / n);
+  let nav = 1, peak = 1, mdd = 0;
+  for (const x of r) { nav *= 1 + x; peak = Math.max(peak, nav); mdd = Math.min(mdd, nav / peak - 1); }
+  const yrs = (dates[s[s.length - 1][0]] - dates[s[0][0]]) / (365.25 * 864e5);
+  const cagr = nav ** (1 / yrs) - 1;
+  return { cagr, total: nav - 1, vol: sd * Math.sqrt(TD), sharpe: exMean / sd * Math.sqrt(TD),
+    sortino: dsd > 0 ? exMean / dsd * Math.sqrt(TD) : NaN, mdd, calmar: mdd < 0 ? cagr / -mdd : NaN,
+    start: dates[s[0][0]], end: dates[s[s.length - 1][0]] };
+}
+function corr(a, b) {
+  const [a0, a1] = win.range(a), [b0, b1] = win.range(b);
+  const lo = Math.max(a0, b0) + 1, hi = Math.min(a1, b1);
+  const x = [], y = [];
+  for (let i = lo; i <= hi; i++) if (R[a][i] !== null && R[b][i] !== null) { x.push(R[a][i]); y.push(R[b][i]); }
+  const n = x.length; if (n < 20) return NaN;
+  const mx = x.reduce((p, q) => p + q, 0) / n, my = y.reduce((p, q) => p + q, 0) / n;
+  let sxy = 0, sxx = 0, syy = 0;
+  for (let i = 0; i < n; i++) { sxy += (x[i] - mx) * (y[i] - my); sxx += (x[i] - mx) ** 2; syy += (y[i] - my) ** 2; }
+  return sxy / Math.sqrt(sxx * syy);
+}
+const pct = (v, d = 1) => isFinite(v) ? `${(v * 100).toFixed(d)}%` : "–";
+const num = (v, d = 2) => isFinite(v) ? v.toFixed(d) : "–";
+const signPct = (v, d = 1) => isFinite(v) ? `${v > 0 ? "+" : ""}${(v * 100).toFixed(d)}%` : "–";
+
+// ---------- DOM helpers ----------
+function el(tag, attrs = {}, text) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+function sv(tag, attrs = {}, text) {
+  const e = document.createElementNS(NS, tag);
+  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+function keyEl(c) { const k = el("span", { class: "key" + (c === "SPY" ? " dash" : "") }); k.style.background = COLOR[c]; return k; }
+const tip = document.getElementById("tip");
+function showTip(evt, title, rows) {
+  tip.replaceChildren(el("div", { class: "t" }, title));
+  for (const [c, label, val] of rows) {
+    const r = el("div", { class: "r" }); const s = el("span");
+    if (c) s.appendChild(keyEl(c));
+    s.appendChild(document.createTextNode(label));
+    r.append(s, el("b", {}, val)); tip.appendChild(r);
+  }
+  tip.style.display = "block";
+  const host = document.querySelector(".viz-root").getBoundingClientRect();
+  const w = tip.offsetWidth, h = tip.offsetHeight;
+  let x = evt.clientX - host.left + 14, y = evt.clientY - host.top + 14;
+  if (evt.clientX + w + 24 > window.innerWidth) x = evt.clientX - host.left - w - 14;
+  if (evt.clientY + h + 24 > window.innerHeight) y = evt.clientY - host.top - h - 14;
+  tip.style.left = x + "px"; tip.style.top = y + "px";
+}
+const hideTip = () => { tip.style.display = "none"; };
+
+// ---------- KPI table ----------
+function renderKPI() {
+  const t = document.getElementById("kpi"); t.replaceChildren();
+  const head = el("tr");
+  ["Strategy", "Mode", "Window", "CAGR", "Total", "Volatility", "Sharpe", "Sortino", "Max DD", "Calmar", "Corr. to SPY", "Turnover / yr"]
+    .forEach(h => head.appendChild(el("th", { scope: "col" }, h)));
+  t.appendChild(head);
+  const rows = ALL.map(c => ({ c, s: stats(c) })).filter(x => x.s);
+  const strat = rows.filter(x => x.c !== "SPY").sort((a, b) => b.s.sharpe - a.s.sharpe);
+  for (const { c, s } of [...strat, ...rows.filter(x => x.c === "SPY")]) {
+    const meta = S.find(m => m.code === c);
+    const tr = el("tr", c === "SPY" ? { class: "bench" } : {});
+    const td0 = el("td"); td0.appendChild(keyEl(c)); td0.appendChild(document.createTextNode(c === "SPY" ? "SPY benchmark" : `${c} · ${NAME[c]}`));
+    tr.appendChild(td0);
+    tr.appendChild(el("td", {}, meta ? meta.mode : "buy & hold"));
+    tr.appendChild(el("td", {}, `${fmtD(s.start).slice(0, 7)} → ${fmtD(s.end).slice(0, 7)}`));
+    tr.appendChild(el("td", { class: s.cagr >= 0 ? "pos" : "neg" }, pct(s.cagr)));
+    tr.appendChild(el("td", {}, pct(s.total, 0)));
+    tr.appendChild(el("td", {}, pct(s.vol)));
+    tr.appendChild(el("td", {}, num(s.sharpe)));
+    tr.appendChild(el("td", {}, num(s.sortino)));
+    tr.appendChild(el("td", {}, pct(s.mdd)));
+    tr.appendChild(el("td", {}, num(s.calmar)));
+    tr.appendChild(el("td", {}, c === "SPY" ? "1.00" : num(corr(c, "SPY"))));
+    tr.appendChild(el("td", {}, meta && meta.turnover ? meta.turnover : "–"));
+    t.appendChild(tr);
+  }
+}
+
+// ---------- line charts ----------
+function yearTicks(i0, i1, maxTicks) {
+  const y0 = dates[i0].getUTCFullYear(), y1 = dates[i1].getUTCFullYear();
+  const span = y1 - y0 + 1; const step = [1, 2, 3, 5, 10].find(s => span / s <= maxTicks) || 10;
+  const out = [];
+  for (let y = Math.ceil(y0 / step) * step; y <= y1; y += step) {
+    const i = dates.findIndex(d => d.getUTCFullYear() >= y);
+    if (i >= i0 && i <= i1) out.push([i, String(y)]);
+  }
+  if (out.length < 2 && span <= 2) { // short windows: quarter ticks
+    out.length = 0;
+    let last = -1;
+    for (let i = i0; i <= i1; i++) { const m = dates[i].getUTCMonth(); if (m % 3 === 0 && m !== last) { last = m; out.push([i, dates[i].toISOString().slice(0, 7)]); } }
+  }
+  return out;
+}
+
+function renderEquity() {
+  const host = document.getElementById("eq"); host.replaceChildren();
+  const leg = document.getElementById("legendEq"); leg.replaceChildren();
+  ALL.forEach(c => { const s = el("span"); s.appendChild(keyEl(c)); s.appendChild(document.createTextNode(c === "SPY" ? "SPY" : `${c} ${NAME[c]}`)); leg.appendChild(s); });
+  const W = 1100, H = 420, m = { l: 56, r: 150, t: 10, b: 28 };
+  const series = {}; let i0 = N, i1 = 0, lo = Infinity, hi = -Infinity;
+  for (const c of ALL) {
+    const s = slice(c); let nav = 100; const pts = [];
+    for (const [i, r] of s) { nav *= 1 + r; pts.push([i, nav]); lo = Math.min(lo, nav); hi = Math.max(hi, nav); }
+    series[c] = pts; if (pts.length) { i0 = Math.min(i0, pts[0][0]); i1 = Math.max(i1, pts[pts.length - 1][0]); }
+  }
+  const ly0 = Math.log(lo * 0.95), ly1 = Math.log(hi * 1.05);
+  const X = i => m.l + (i - i0) / Math.max(1, i1 - i0) * (W - m.l - m.r);
+  const Y = v => m.t + (1 - (Math.log(v) - ly0) / (ly1 - ly0)) * (H - m.t - m.b);
+  const svg = sv("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Growth of $100 for each strategy and SPY, log scale" });
+  const g = sv("g", { class: "axis" });
+  const cands = [10, 20, 25, 50, 75, 100, 125, 150, 200, 250, 300, 400, 500, 750, 1000, 1500, 2000, 3000, 5000];
+  let ticks = cands.filter(v => v >= lo * 0.95 && v <= hi * 1.05);
+  while (ticks.length > 7) ticks = ticks.filter((_, k) => k % 2 === 0);
+  for (const v of ticks) {
+    g.appendChild(sv("line", { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), stroke: "var(--grid)", "stroke-width": 1 }));
+    g.appendChild(sv("text", { x: m.l - 8, y: Y(v) + 4, "text-anchor": "end" }, `$${v}`));
+  }
+  for (const [i, lab] of yearTicks(i0, i1, 10)) g.appendChild(sv("text", { x: X(i), y: H - 8, "text-anchor": "middle" }, lab));
+  g.appendChild(sv("line", { x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b, stroke: "var(--axis)" }));
+  svg.appendChild(g);
+  // Lines: SPY first so strategies draw on top.
+  const ends = [];
+  for (const c of ["SPY", ...CODES]) {
+    const pts = series[c]; if (!pts.length) continue;
+    const step = Math.max(1, Math.floor(pts.length / 1400));
+    let d = ""; pts.forEach(([i, v], k) => { if (k % step === 0 || k === pts.length - 1) d += (d ? "L" : "M") + X(i).toFixed(1) + "," + Y(v).toFixed(1); });
+    svg.appendChild(sv("path", { d, fill: "none", stroke: COLOR[c], "stroke-width": c === "SPY" ? 1.5 : 2, "stroke-dasharray": c === "SPY" ? "5 4" : "none", "stroke-linejoin": "round" }));
+    const [li, lv] = pts[pts.length - 1]; ends.push({ c, x: X(li), y: Y(lv), v: lv });
+  }
+  // Direct labels at line ends, nudged apart.
+  ends.sort((a, b) => a.y - b.y);
+  for (let k = 1; k < ends.length; k++) if (ends[k].y - ends[k - 1].y < 14) ends[k].y = ends[k - 1].y + 14;
+  for (const e of ends) {
+    svg.appendChild(sv("circle", { cx: e.x, cy: Y(e.v), r: 3, fill: COLOR[e.c] }));
+    const t = sv("text", { x: W - m.r + 10, y: e.y + 4, class: "lbl" });
+    t.style.fill = "var(--text-secondary)";
+    t.textContent = `${e.c}  $${Math.round(e.v)}`; svg.appendChild(t);
+  }
+  // Crosshair + tooltip.
+  const cross = sv("line", { y1: m.t, y2: H - m.b, stroke: "var(--text-muted)", "stroke-width": 1, visibility: "hidden" });
+  svg.appendChild(cross);
+  const hit = sv("rect", { x: m.l, y: m.t, width: W - m.l - m.r, height: H - m.t - m.b, fill: "transparent", tabindex: 0 });
+  const lookup = {}; for (const c of ALL) lookup[c] = new Map(series[c]);
+  const at = (c, i) => { const mp = lookup[c]; for (let j = i; j >= i0; j--) if (mp.has(j)) return mp.get(j); return undefined; };
+  function move(evt, iForce) {
+    let i = iForce;
+    if (i === undefined) { const p = svg.getBoundingClientRect(); const fx = (evt.clientX - p.left) / p.width * W; i = Math.round(i0 + (fx - m.l) / (W - m.l - m.r) * (i1 - i0)); }
+    i = Math.max(i0, Math.min(i1, i)); hit._i = i;
+    cross.setAttribute("x1", X(i)); cross.setAttribute("x2", X(i)); cross.setAttribute("visibility", "visible");
+    const rows = ALL.map(c => [c, at(c, i)]).filter(x => x[1] !== undefined).sort((a, b) => b[1] - a[1])
+      .map(([c, v]) => [c, c, `$${v.toFixed(0)}`]);
+    showTip(evt, fmtD(dates[i]), rows);
+  }
+  hit.addEventListener("pointermove", e => move(e));
+  hit.addEventListener("pointerleave", () => { cross.setAttribute("visibility", "hidden"); hideTip(); });
+  hit.addEventListener("focus", () => { const b = hit.getBoundingClientRect(); move({ clientX: b.right - 40, clientY: b.top + 40 }, i1); });
+  hit.addEventListener("keydown", e => {
+    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+    e.preventDefault(); const b = hit.getBoundingClientRect();
+    const i = (hit._i ?? i1) + (e.key === "ArrowRight" ? 21 : -21);
+    move({ clientX: b.left + 60, clientY: b.top + 40 }, i);
+  });
+  hit.addEventListener("blur", () => { cross.setAttribute("visibility", "hidden"); hideTip(); });
+  svg.appendChild(hit);
+  host.appendChild(svg);
+}
+
+function ddSeries(c) {
+  let nav = 1, peak = 1; return slice(c).map(([i, r]) => { nav *= 1 + r; peak = Math.max(peak, nav); return [i, nav / peak - 1]; });
+}
+function renderDD() {
+  const host = document.getElementById("dd"); host.replaceChildren();
+  const all = Object.fromEntries(ALL.map(c => [c, ddSeries(c)]));
+  const floor = Math.min(-0.05, ...Object.values(all).flat().map(x => x[1]));
+  const lo = Math.floor(floor * 10) / 10;
+  for (const c of CODES) {
+    const pts = all[c]; if (!pts.length) continue;
+    const i0 = pts[0][0], i1 = pts[pts.length - 1][0];
+    const spy = all.SPY.filter(([i]) => i >= i0 && i <= i1);
+    const W = 540, H = 170, m = { l: 44, r: 10, t: 8, b: 22 };
+    const X = i => m.l + (i - i0) / Math.max(1, i1 - i0) * (W - m.l - m.r);
+    const Y = v => m.t + (v / lo) * (H - m.t - m.b);
+    const box = el("div", { class: "mini" });
+    const worst = Math.min(...pts.map(x => x[1]));
+    box.appendChild(el("h3", {}, `${c} · ${NAME[c]}`));
+    box.appendChild(el("div", { class: "meta" }, `Worst: ${pct(worst)} · SPY worst over the same days: ${pct(Math.min(0, ...spy.map(x => x[1])))}`));
+    const svg = sv("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": `${NAME[c]} drawdown vs SPY` });
+    const g = sv("g", { class: "axis" });
+    for (let v = 0; v >= lo - 1e-9; v -= (lo <= -0.4 ? 0.2 : 0.1)) {
+      g.appendChild(sv("line", { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), stroke: v === 0 ? "var(--axis)" : "var(--grid)" }));
+      g.appendChild(sv("text", { x: m.l - 6, y: Y(v) + 4, "text-anchor": "end" }, `${Math.round(v * 100)}%`));
+    }
+    for (const [i, lab] of yearTicks(i0, i1, 6)) g.appendChild(sv("text", { x: X(i), y: H - 6, "text-anchor": "middle" }, lab));
+    svg.appendChild(g);
+    const step = Math.max(1, Math.floor(pts.length / 900));
+    let d = `M${X(i0)},${Y(0)}`; pts.forEach(([i, v], k) => { if (k % step === 0 || k === pts.length - 1) d += `L${X(i).toFixed(1)},${Y(v).toFixed(1)}`; });
+    const area = sv("path", { d: d + `L${X(i1)},${Y(0)}Z`, fill: COLOR[c], "fill-opacity": 0.22, stroke: "none" });
+    let dl = ""; pts.forEach(([i, v], k) => { if (k % step === 0 || k === pts.length - 1) dl += (dl ? "L" : "M") + X(i).toFixed(1) + "," + Y(v).toFixed(1); });
+    let ds = ""; spy.forEach(([i, v], k) => { if (k % step === 0 || k === spy.length - 1) ds += (ds ? "L" : "M") + X(i).toFixed(1) + "," + Y(v).toFixed(1); });
+    svg.append(area, sv("path", { d: ds, fill: "none", stroke: "var(--bench)", "stroke-width": 1.2, "stroke-dasharray": "4 3" }),
+      sv("path", { d: dl, fill: "none", stroke: COLOR[c], "stroke-width": 2 }));
+    const cross = sv("line", { y1: m.t, y2: H - m.b, stroke: "var(--text-muted)", visibility: "hidden" }); svg.appendChild(cross);
+    const mp = new Map(pts), ms = new Map(spy);
+    const hit = sv("rect", { x: m.l, y: m.t, width: W - m.l - m.r, height: H - m.t - m.b, fill: "transparent" });
+    hit.addEventListener("pointermove", e => {
+      const p = svg.getBoundingClientRect(); const fx = (e.clientX - p.left) / p.width * W;
+      let i = Math.round(i0 + (fx - m.l) / (W - m.l - m.r) * (i1 - i0)); i = Math.max(i0, Math.min(i1, i));
+      while (!mp.has(i) && i > i0) i--;
+      cross.setAttribute("x1", X(i)); cross.setAttribute("x2", X(i)); cross.setAttribute("visibility", "visible");
+      let j = i; while (!ms.has(j) && j > i0) j--;
+      showTip(e, fmtD(dates[i]), [[c, c, pct(mp.get(i))], ["SPY", "SPY", ms.has(j) ? pct(ms.get(j)) : "–"]]);
+    });
+    hit.addEventListener("pointerleave", () => { cross.setAttribute("visibility", "hidden"); hideTip(); });
+    svg.appendChild(hit);
+    box.appendChild(svg); host.appendChild(box);
+  }
+}
+
+// ---------- heat tables ----------
+function hexToRgb(v) { const s = getComputedStyle(document.querySelector(".viz-root")).getPropertyValue(v).trim(); return [1, 3, 5].map(k => parseInt(s.slice(k, k + 2), 16)); }
+function mix(a, b, t) { return a.map((x, k) => Math.round(x + (b[k] - x) * t)); }
+function divColor(v, cap) {
+  const t = Math.max(-1, Math.min(1, v / cap)), a = Math.abs(t);
+  const mid = hexToRgb("--mid"), s = t >= 0 ? ["--pos-1", "--pos-2", "--pos-3"] : ["--neg-1", "--neg-2", "--neg-3"];
+  const [c1, c2, c3] = s.map(hexToRgb);
+  const rgb = a < 0.33 ? mix(mid, c1, a / 0.33) : a < 0.75 ? mix(c1, c2, (a - 0.33) / 0.42) : mix(c2, c3, (a - 0.75) / 0.25);
+  const lum = (0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2]) / 255;
+  return { bg: `rgb(${rgb.join(",")})`, fg: lum > 0.55 ? "#0b0b0b" : "#ffffff" };
+}
+function rampCss() { const stops = []; for (let k = -10; k <= 10; k++) stops.push(divColor(k / 10, 1).bg); return `linear-gradient(90deg, ${stops.join(",")})`; }
+function heatCell(v, cap, text, tipTitle, tipRows) {
+  const td = el("td"); const d = el("div", { tabindex: 0 }, text);
+  if (isFinite(v)) { const c = divColor(v, cap); d.style.background = c.bg; d.style.color = c.fg; }
+  else d.style.color = "var(--text-muted)";
+  d.addEventListener("pointermove", e => showTip(e, tipTitle, tipRows));
+  d.addEventListener("pointerleave", hideTip);
+  d.addEventListener("focus", () => { const b = d.getBoundingClientRect(); showTip({ clientX: b.right, clientY: b.bottom }, tipTitle, tipRows); });
+  d.addEventListener("blur", hideTip);
+  td.appendChild(d); return td;
+}
+function renderYears() {
+  const t = document.getElementById("years"); t.replaceChildren();
+  const yr = {}; const years = new Set(); const partial = {};
+  for (const c of ALL) {
+    yr[c] = {}; const s = slice(c); if (!s.length) continue;
+    for (const [i, r] of s) { const y = dates[i].getUTCFullYear(); years.add(y); yr[c][y] = (yr[c][y] ?? 1) * (1 + r); }
+    const f = dates[s[0][0]], l = dates[s[s.length - 1][0]];
+    partial[c] = { first: f.getUTCMonth() > 0 || f.getUTCDate() > 7 ? f.getUTCFullYear() : null, last: l.getUTCMonth() < 11 || l.getUTCDate() < 24 ? l.getUTCFullYear() : null };
+  }
+  const ys = [...years].sort();
+  const head = el("tr"); head.appendChild(el("th", { scope: "col" }, ""));
+  ys.forEach(y => head.appendChild(el("th", { scope: "col" }, String(y)))); t.appendChild(head);
+  for (const c of ALL) {
+    const tr = el("tr"); const td0 = el("td"); td0.appendChild(keyEl(c)); td0.appendChild(document.createTextNode(c)); tr.appendChild(td0);
+    for (const y of ys) {
+      const g = yr[c][y]; const v = g === undefined ? NaN : g - 1;
+      const star = partial[c] && (partial[c].first === y || partial[c].last === y) ? "*" : "";
+      tr.appendChild(heatCell(v, 0.3, isFinite(v) ? `${Math.round(v * 100)}%${star}` : "", `${y}${star ? " (partial)" : ""}`, [[c, NAME[c], isFinite(v) ? signPct(v) : "not invested"]]));
+    }
+    t.appendChild(tr);
+  }
+  document.getElementById("ramp1").style.background = rampCss();
+}
+function renderCorr() {
+  const t = document.getElementById("corr"); t.replaceChildren();
+  const head = el("tr"); head.appendChild(el("th", { scope: "col" }, ""));
+  ALL.forEach(c => head.appendChild(el("th", { scope: "col" }, c))); t.appendChild(head);
+  for (const a of ALL) {
+    const tr = el("tr"); const td0 = el("td"); td0.appendChild(keyEl(a)); td0.appendChild(document.createTextNode(a)); tr.appendChild(td0);
+    for (const b of ALL) { const v = a === b ? 1 : corr(a, b); tr.appendChild(heatCell(v, 1, num(v), `${a} vs ${b}`, [[null, "Correlation", num(v)]])); }
+    t.appendChild(tr);
+  }
+  document.getElementById("ramp2").style.background = rampCss();
+}
+
+// ---------- static sections ----------
+function renderHoldings() {
+  const host = document.getElementById("hold"); host.replaceChildren();
+  document.getElementById("holdSub").textContent = "Target weights on the last day of each backtest. Negative = short. Weights above 100% in total mean leverage (W18 scales up to 2x to hit its volatility target).";
+  for (const s of S) {
+    const box = el("div"); box.appendChild(el("h3", {}, `${s.code} · ${s.holdings_date}`));
+    const gross = s.holdings.reduce((a, h) => a + Math.abs(h.w), 0);
+    const max = Math.max(0.0001, ...s.holdings.map(h => Math.abs(h.w)));
+    if (!s.holdings.length) box.appendChild(el("div", { class: "meta" }, "Flat (all cash)"));
+    for (const h of s.holdings) {
+      const row = el("div", { class: "hrow" }); row.appendChild(el("span", {}, h.asset));
+      const bar = el("div", { class: "bar" }); const i = el("i");
+      i.style.background = COLOR[s.code]; i.style.width = (Math.abs(h.w) / max * 50) + "%";
+      if (h.w >= 0) i.style.left = "50%"; else i.style.right = "50%";
+      bar.appendChild(i); row.appendChild(bar); row.appendChild(el("span", { class: "v" }, signPct(h.w)));
+      box.appendChild(row);
+    }
+    box.appendChild(el("div", { class: "meta" }, `Gross exposure ${pct(gross, 0)} · average while invested ${pct(s.avg_gross, 0)}`));
+    host.appendChild(box);
+  }
+}
+function renderRepro() {
+  const t = document.getElementById("repro");
+  const head = el("tr");
+  ["Strategy", "Configured period", "Rebal.", "Total · run", "Total · pub.", "Max DD · run", "Max DD · pub.", "Sharpe · run", "Sharpe · pub."]
+    .forEach(h => head.appendChild(el("th", { scope: "col" }, h)));
+  t.appendChild(head);
+  for (const s of S) {
+    const e = s.engine, p = s.published; const tr = el("tr");
+    const td0 = el("td"); td0.appendChild(keyEl(s.code)); td0.appendChild(document.createTextNode(`${s.code} · ${s.name}`)); tr.appendChild(td0);
+    [`${e.start} → ${e.end}`, e.rebalances ?? "–", `${e.total.toFixed(2)}%`, `${p.total.toFixed(2)}%`, `${e.maxdd.toFixed(2)}%`, `${p.maxdd.toFixed(2)}%`, e.sharpe.toFixed(2), p.sharpe.toFixed(2)]
+      .forEach(v => tr.appendChild(el("td", {}, String(v))));
+    t.appendChild(tr);
+  }
+}
+function renderNotes() {
+  const ul = document.getElementById("notes");
+  const items = [
+    "Strategies: the five highest-Sharpe full-history examples on backtester.quantjourney.cloud (intraday and walk-forward examples excluded). The strategy files in strategies/ were run unchanged with QuantJourney Backtester 0.12.5.",
+    "Data: Yahoo Finance daily bars (free). Open, high, low and close are all scaled by Yahoo's dividend/split adjustment, so results are total-return. Only the engine's data-fetch step was swapped (Rishi_Research/yahoo_data.py); signals, sizing, rebalancing, costs and accounting are the engine's own.",
+    "Costs: each strategy's own settings. O17 charges $0.005/share (minimum $1 per order) plus 3 bps slippage on every market-order fill. The weight-mode strategies use the engine's default weight-execution cost model; see STRATEGIES_EXPLAINED.md for the exact defaults.",
+    "W25 is a price-return proxy on Yahoo's continuous futures (roll gaps, contract multipliers, margin and financing are not modelled). Yahoo's crude oil series printed a negative price on 2020-04-20; that bar is dropped, which is why this run differs slightly from the published W25 result.",
+    "Long/short and leveraged positions pay no borrow or financing costs here. All results are historical simulations, not investable track records.",
+    "Metrics in this dashboard are recomputed from daily returns in the selected window: CAGR uses calendar time; Sharpe and Sortino use a 2% risk-free rate. The window starts on each strategy's first invested day (after indicator warm-up).",
+  ];
+  items.forEach(s => ul.appendChild(el("li", {}, s)));
+}
+
+function renderAll() {
+  document.getElementById("windowNote").textContent = win.note();
+  renderKPI(); renderEquity(); renderDD(); renderYears(); renderCorr();
+}
+document.getElementById("subtitle").textContent =
+  `Five example strategies from the QuantJourney Backtester, re-run locally on Yahoo Finance data · data through ${fmtD(dates[endIdx])} · built ${DATA.generated}`;
+const wbox = document.getElementById("windows");
+for (const w of WINDOWS) {
+  const b = el("button", { type: "button", "aria-pressed": w === win ? "true" : "false" }, w.label);
+  b.addEventListener("click", () => { win = w; [...wbox.children].forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false")); renderAll(); });
+  wbox.appendChild(b);
+}
+document.getElementById("theme").addEventListener("click", () => {
+  const root = document.documentElement;
+  const dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  root.dataset.theme = dark ? "light" : "dark"; renderAll();
+});
+renderHoldings(); renderRepro(); renderNotes(); renderAll();
+</script>
+</body>
+</html>

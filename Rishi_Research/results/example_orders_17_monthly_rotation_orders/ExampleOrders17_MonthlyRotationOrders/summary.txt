@@ -1,0 +1,23 @@
+Section      Metric                     Value
+-----------  ----------------------  --------
+Return       Annualized Return          8.62%
+             Total Return             380.51%
+             MTD                        1.72%
+             QTD                        7.39%
+             YTD                       32.75%
+             1Y                        32.35%
+             3Y Annualized             17.69%
+             5Y Annualized             11.52%
+Risk         Sharpe Ratio                0.68
+             Sortino Ratio               0.94
+             Max Drawdown             -28.24%
+             Calmar Ratio                0.31
+             Recovery Factor             0.31
+             Annualized Volatility     13.64%
+Consistency  Winning Days              52.80%
+             Winning Months            58.77%
+             Winning Quarters          64.47%
+             Winning Years             78.95%
+Trading      Average Daily Turnover     1.41%
+             Annualized Turnover      354.69%
+             Total Turnover          6727.78%

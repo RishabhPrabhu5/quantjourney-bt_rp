@@ -1,0 +1,20 @@
+section,metric,value
+Return,Annualized return,8.62%
+Return,Total return,380.51%
+Return,MTD,1.72%
+Return,QTD,7.39%
+Return,YTD,32.75%
+Return,1Y,32.35%
+Return,3Y annualized,17.69%
+Return,5Y annualized,11.52%
+Risk,Sharpe ratio,0.68
+Risk,Sortino ratio,0.94
+Risk,Max drawdown,-28.24%
+Risk,Calmar ratio,0.31
+Risk,Recovery factor,0.31
+Risk,Annualized volatility,13.64%
+Consistency,Winning days,52.80%
+Consistency,Winning months,58.77%
+Trading,Average daily turnover,1.41%
+Trading,Annualized turnover,354.69%
+Trading,Total traded notional,n/a

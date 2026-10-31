@@ -20,3 +20,37 @@ Ties are broken by smaller maximum drawdown.
 
 Published numbers come from QuantJourney's own runs (engine 0.10.0); they are
 illustrative historical backtests, not investable performance.
+
+## What's in this folder
+
+| Path | What it is |
+|---|---|
+| `dashboard/index.html` | **The dashboard.** Self-contained page (no internet needed): performance table, growth of $100, drawdowns, calendar-year returns, correlations, latest weights, and a reproduction check. Switch the window between the common period, full history, and the last 5 / 3 / 1 years. |
+| `STRATEGIES_EXPLAINED.md` | Plain-English walkthrough of each strategy: signals, portfolio construction, execution and costs (written in a separate session). |
+| `yahoo_data.py` | Free-data adapter: builds the engine's market-data payload from Yahoo Finance instead of QuantJourney Cloud. |
+| `run_top5.py` | Runs the five strategy files from `strategies/` **unchanged**, with only the data source swapped. |
+| `build_dashboard.py`, `dashboard_template.html` | Turn the run outputs into `dashboard/index.html`. |
+| `results/<strategy>/` | Engine outputs per strategy: equity curve, weights, metrics, summary, run metadata and log. The PNG plot packs (~9 MB each) are git-ignored; rerun to regenerate them. |
+
+## Reproduce
+
+```bash
+python3 -m venv .venv && . .venv/bin/activate
+pip install -e ".[data]"
+python Rishi_Research/run_top5.py          # downloads Yahoo data into Rishi_Research/data/ (git-ignored) and runs all five
+python Rishi_Research/build_dashboard.py   # rebuilds dashboard/index.html
+```
+
+Needs network access to `query1.finance.yahoo.com`, `query2.finance.yahoo.com` and `fc.yahoo.com`.
+No QuantJourney account or API key is required.
+
+## Data notes
+
+- Yahoo daily bars, with open/high/low/close all scaled by Yahoo's dividend/split
+  adjustment factor, so both weight mode (`adj_close`) and order mode (`close` fills)
+  are total-return.
+- Four of five runs match QuantJourney's published results to within 0.01%. W25
+  differs slightly (total 48.9% vs 46.3%) because Yahoo's continuous futures history
+  has been revised since and the negative WTI crude print on 2020-04-20 is dropped.
+- The engine's console Sharpe uses a 2% risk-free rate; `metrics.csv` reports a Sharpe
+  with 0% risk-free, so the two differ (e.g. W05: 0.45 vs 0.70). The dashboard uses 2%.

@@ -1,0 +1,63 @@
+[2026-10-31 18:04:35] [INFO] [backtester] [Backtester] max_position_size=35.00% enforced via PositionLimitModel weight cap.
+[2026-10-31 18:04:35] [INFO] [backtester] [Backtester] Initialized: strategy=ExampleWeights05_MonthlyInverseVol, instruments=['SPY', 'EFA', 'EEM', 'TLT', 'IEF', 'GLD', 'DBC', 'VNQ'], version=0.12.5, api=QuantJourney Cloud
+[2026-10-31 18:04:35] [INFO] [backtester] ═══ Running Cloud Strategy: ExampleWeights05_MonthlyInverseVol ═══
+[2026-10-31 18:04:35] [INFO] [backtester] [Backtester] Data reconstructed: 8 instruments, 4780 dates, prices cols=['open', 'high', 'low', 'close', 'adj_close', 'volume']
+[2026-10-31 18:04:35] [INFO] [backtester] [Risk] Applied PositionLimitModel(max=35%) to weights
+[2026-10-31 18:04:35] [INFO] [backtester] [Rebalance] 229 rebalances (cal=229, drift=0, sig=0, cb=0) | avg 20.9 days between | policy=RebalancePolicy(freq=BME)
+[2026-10-31 18:04:37] [INFO] [backtester] Strategy folder set to: /home/user/quantjourney-bt_rp/Rishi_Research/results/example_weights_05_monthly_inverse_vol/ExampleWeights05_MonthlyInverseVol
+[2026-10-31 18:04:37] [INFO] [backtester] Generating strategy performance analysis.
+[2026-10-31 18:04:37] [INFO] [backtester] Performance report saved to: /home/user/quantjourney-bt_rp/Rishi_Research/results/example_weights_05_monthly_inverse_vol/ExampleWeights05_MonthlyInverseVol/performance_report.txt
+Section      Metric                     Value
+-----------  ----------------------  --------
+Return       Annualized Return          5.45%
+             Total Return             174.15%
+             MTD                       -0.18%
+             QTD                        2.06%
+             YTD                       15.84%
+             1Y                        15.79%
+             3Y Annualized             10.39%
+             5Y Annualized              4.87%
+Risk         Sharpe Ratio                0.70
+             Sortino Ratio               0.99
+             Max Drawdown             -20.42%
+             Calmar Ratio                0.27
+             Recovery Factor             0.27
+             Annualized Volatility      8.13%
+Consistency  Winning Days              53.39%
+             Winning Months            60.09%
+             Winning Quarters          67.11%
+             Winning Years             73.68%
+Trading      Average Daily Turnover     0.45%
+             Annualized Turnover      114.59%
+             Total Turnover          2173.49%
+
+[2026-10-31 18:04:55] [INFO] [backtester] [Backtester] Dashboard saved to /home/user/quantjourney-bt_rp/Rishi_Research/results/example_weights_05_monthly_inverse_vol/ExampleWeights05_MonthlyInverseVol/dashboard.html
+[2026-10-31 18:04:55] [INFO] [backtester] [Backtester] Plot pack saved to /home/user/quantjourney-bt_rp/Rishi_Research/results/example_weights_05_monthly_inverse_vol/ExampleWeights05_MonthlyInverseVol/plots (21 PNG files)
+[2026-10-31 18:04:55] [INFO] [backtester] Run metadata saved to /home/user/quantjourney-bt_rp/Rishi_Research/results/example_weights_05_monthly_inverse_vol/ExampleWeights05_MonthlyInverseVol/run_metadata.json
+[2026-10-31 18:04:55] [INFO] [backtester] [Backtester] Runtime: fetch=0.29s | data=0.39s | calc=0.15s | reports=19.21s | archive=0.00s | total=20.04s
+[2026-10-31 18:04:55] [INFO] [backtester] ═══ Cloud Strategy ExampleWeights05_MonthlyInverseVol completed ═══
+
+============================================================
+  Strategy: ExampleWeights05_MonthlyInverseVol
+  Backtester: v0.12.5
+  Period:   2007-01-03 → 2025-12-31
+  Assets:   SPY, EFA, EEM, TLT, IEF, GLD, DBC, VNQ
+────────────────────────────────────────────────────────────
+  Initial NAV:  $    100,000.00
+  Final NAV:    $    274,152.52
+  Total Return:        174.15%
+  Ann. Volatility:       8.13%
+  Max Drawdown:        -20.42%
+  Sharpe Ratio:        0.4490
+────────────────────────────────────────────────────────────
+  Runtime Total:        20.04s
+  Data Fetch:            0.29s
+  Data Prep:             0.39s
+  Calculation:           0.15s
+  Reporting:            19.21s
+────────────────────────────────────────────────────────────
+  Rebalance Policy: RebalancePolicy(freq=BME)
+  Rebalances:             229
+  Avg Days Btw:          20.9
+============================================================
+
