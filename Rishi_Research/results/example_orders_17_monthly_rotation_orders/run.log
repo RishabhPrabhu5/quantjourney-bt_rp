@@ -1,0 +1,57 @@
+[2026-10-31 18:05:39] [WARNING] [backtester] [Backtester] max_position_size accepted for report metadata only — not enforced (orders mode or custom risk_model supplied).
+[2026-10-31 18:05:39] [INFO] [backtester] [Backtester] Initialized: strategy=ExampleOrders17_MonthlyRotationOrders, instruments=['SPY', 'EFA', 'EEM', 'TLT', 'IEF', 'GLD', 'DBC', 'VNQ'], version=0.12.5, api=QuantJourney Cloud
+[2026-10-31 18:05:39] [INFO] [backtester] ═══ Running Cloud Strategy: ExampleOrders17_MonthlyRotationOrders ═══
+[2026-10-31 18:05:40] [INFO] [backtester] [Backtester] Data reconstructed: 8 instruments, 4780 dates, prices cols=['open', 'high', 'low', 'close', 'adj_close', 'volume']
+[2026-10-31 18:05:41] [INFO] [backtester] Strategy folder set to: /home/user/quantjourney-bt_rp/Rishi_Research/results/example_orders_17_monthly_rotation_orders/ExampleOrders17_MonthlyRotationOrders
+[2026-10-31 18:05:41] [INFO] [backtester] Generating strategy performance analysis.
+[2026-10-31 18:05:41] [INFO] [backtester] Performance report saved to: /home/user/quantjourney-bt_rp/Rishi_Research/results/example_orders_17_monthly_rotation_orders/ExampleOrders17_MonthlyRotationOrders/performance_report.txt
+Section      Metric                     Value
+-----------  ----------------------  --------
+Return       Annualized Return          8.62%
+             Total Return             380.51%
+             MTD                        1.72%
+             QTD                        7.39%
+             YTD                       32.75%
+             1Y                        32.35%
+             3Y Annualized             17.69%
+             5Y Annualized             11.52%
+Risk         Sharpe Ratio                0.68
+             Sortino Ratio               0.94
+             Max Drawdown             -28.24%
+             Calmar Ratio                0.31
+             Recovery Factor             0.31
+             Annualized Volatility     13.64%
+Consistency  Winning Days              52.80%
+             Winning Months            58.77%
+             Winning Quarters          64.47%
+             Winning Years             78.95%
+Trading      Average Daily Turnover     1.41%
+             Annualized Turnover      354.69%
+             Total Turnover          6727.78%
+
+[2026-10-31 18:05:59] [INFO] [backtester] [Backtester] Dashboard saved to /home/user/quantjourney-bt_rp/Rishi_Research/results/example_orders_17_monthly_rotation_orders/ExampleOrders17_MonthlyRotationOrders/dashboard.html
+[2026-10-31 18:05:59] [INFO] [backtester] [Backtester] Plot pack saved to /home/user/quantjourney-bt_rp/Rishi_Research/results/example_orders_17_monthly_rotation_orders/ExampleOrders17_MonthlyRotationOrders/plots (21 PNG files)
+[2026-10-31 18:05:59] [INFO] [backtester] Run metadata saved to /home/user/quantjourney-bt_rp/Rishi_Research/results/example_orders_17_monthly_rotation_orders/ExampleOrders17_MonthlyRotationOrders/run_metadata.json
+[2026-10-31 18:05:59] [INFO] [backtester] [Backtester] Runtime: fetch=0.27s | data=0.30s | calc=0.92s | reports=18.84s | archive=0.00s | total=20.33s
+[2026-10-31 18:05:59] [INFO] [backtester] ═══ Cloud Strategy ExampleOrders17_MonthlyRotationOrders completed ═══
+
+============================================================
+  Strategy: ExampleOrders17_MonthlyRotationOrders
+  Backtester: v0.12.5
+  Period:   2007-01-03 → 2025-12-31
+  Assets:   SPY, EFA, EEM, TLT, IEF, GLD, DBC, VNQ
+────────────────────────────────────────────────────────────
+  Initial NAV:  $    100,000.00
+  Final NAV:    $    480,509.33
+  Total Return:        380.51%
+  Ann. Volatility:      13.63%
+  Max Drawdown:        -28.24%
+  Sharpe Ratio:        0.5288
+────────────────────────────────────────────────────────────
+  Runtime Total:        20.33s
+  Data Fetch:            0.27s
+  Data Prep:             0.30s
+  Calculation:           0.92s
+  Reporting:            18.84s
+============================================================
+

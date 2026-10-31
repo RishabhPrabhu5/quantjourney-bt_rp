@@ -1,0 +1,72 @@
+[2026-10-31 18:06:00] [INFO] [backtester] [Backtester] max_position_size=25.00% enforced via PositionLimitModel weight cap.
+[2026-10-31 18:06:00] [INFO] [backtester] [Backtester] Initialized: strategy=ExampleWeights01_DailySMATrend, instruments=['XLB', 'XLE', 'XLF', 'XLI', 'XLK', 'XLP', 'XLU', 'XLV', 'XLY'], version=0.12.5, api=QuantJourney Cloud
+[2026-10-31 18:06:00] [INFO] [backtester] ═══ Running Cloud Strategy: ExampleWeights01_DailySMATrend ═══
+[2026-10-31 18:06:01] [INFO] [backtester] Stored features for XLB: ['exchange', 'units', 'eligibility', 'active', 'forecasts', 'is_trading_day', 'day_type', 'SMA_50_close', 'SMA_200_close']
+[2026-10-31 18:06:01] [INFO] [backtester] Stored features for XLE: ['exchange', 'units', 'eligibility', 'active', 'forecasts', 'is_trading_day', 'day_type', 'SMA_50_close', 'SMA_200_close']
+[2026-10-31 18:06:01] [INFO] [backtester] Stored features for XLF: ['exchange', 'units', 'eligibility', 'active', 'forecasts', 'is_trading_day', 'day_type', 'SMA_50_close', 'SMA_200_close']
+[2026-10-31 18:06:02] [INFO] [backtester] Stored features for XLI: ['exchange', 'units', 'eligibility', 'active', 'forecasts', 'is_trading_day', 'day_type', 'SMA_50_close', 'SMA_200_close']
+[2026-10-31 18:06:02] [INFO] [backtester] Stored features for XLK: ['exchange', 'units', 'eligibility', 'active', 'forecasts', 'is_trading_day', 'day_type', 'SMA_50_close', 'SMA_200_close']
+[2026-10-31 18:06:02] [INFO] [backtester] Stored features for XLP: ['exchange', 'units', 'eligibility', 'active', 'forecasts', 'is_trading_day', 'day_type', 'SMA_50_close', 'SMA_200_close']
+[2026-10-31 18:06:02] [INFO] [backtester] Stored features for XLU: ['exchange', 'units', 'eligibility', 'active', 'forecasts', 'is_trading_day', 'day_type', 'SMA_50_close', 'SMA_200_close']
+[2026-10-31 18:06:03] [INFO] [backtester] Stored features for XLV: ['exchange', 'units', 'eligibility', 'active', 'forecasts', 'is_trading_day', 'day_type', 'SMA_50_close', 'SMA_200_close']
+[2026-10-31 18:06:03] [INFO] [backtester] Stored features for XLY: ['exchange', 'units', 'eligibility', 'active', 'forecasts', 'is_trading_day', 'day_type', 'SMA_50_close', 'SMA_200_close']
+[2026-10-31 18:06:03] [INFO] [backtester] [Backtester] Data reconstructed: 9 instruments, 6539 dates, prices cols=['open', 'high', 'low', 'close', 'adj_close', 'volume']
+[2026-10-31 18:06:03] [INFO] [backtester] [Risk] Applied PositionLimitModel(max=25%) to weights
+[2026-10-31 18:06:03] [INFO] [backtester] [Rebalance] 6539 rebalances (cal=6539, drift=0, sig=0, cb=0) | avg 1.0 days between | policy=RebalancePolicy(freq=D)
+[2026-10-31 18:06:05] [INFO] [backtester] Strategy folder set to: /home/user/quantjourney-bt_rp/Rishi_Research/results/example_weights_01_sma_daily/ExampleWeights01_DailySMATrend
+[2026-10-31 18:06:05] [INFO] [backtester] Generating strategy performance analysis.
+[2026-10-31 18:06:05] [INFO] [backtester] Performance report saved to: /home/user/quantjourney-bt_rp/Rishi_Research/results/example_weights_01_sma_daily/ExampleWeights01_DailySMATrend/performance_report.txt
+Section      Metric                     Value
+-----------  ----------------------  --------
+Return       Annualized Return          7.38%
+             Total Return             536.95%
+             MTD                        0.20%
+             QTD                        1.89%
+             YTD                        5.68%
+             1Y                         4.74%
+             3Y Annualized              9.43%
+             5Y Annualized             10.57%
+Risk         Sharpe Ratio                0.60
+             Sortino Ratio               0.83
+             Max Drawdown             -34.68%
+             Calmar Ratio                0.21
+             Recovery Factor             0.21
+             Annualized Volatility     13.31%
+Consistency  Winning Days              50.37%
+             Winning Months            60.26%
+             Winning Quarters          68.27%
+             Winning Years             76.92%
+Trading      Average Daily Turnover     0.65%
+             Annualized Turnover      163.73%
+             Total Turnover          4248.61%
+
+[2026-10-31 18:06:26] [INFO] [backtester] [Backtester] Dashboard saved to /home/user/quantjourney-bt_rp/Rishi_Research/results/example_weights_01_sma_daily/ExampleWeights01_DailySMATrend/dashboard.html
+[2026-10-31 18:06:26] [INFO] [backtester] [Backtester] Plot pack saved to /home/user/quantjourney-bt_rp/Rishi_Research/results/example_weights_01_sma_daily/ExampleWeights01_DailySMATrend/plots (21 PNG files)
+[2026-10-31 18:06:26] [INFO] [backtester] Run metadata saved to /home/user/quantjourney-bt_rp/Rishi_Research/results/example_weights_01_sma_daily/ExampleWeights01_DailySMATrend/run_metadata.json
+[2026-10-31 18:06:26] [INFO] [backtester] [Backtester] Runtime: fetch=0.38s | data=2.52s | calc=0.73s | reports=22.04s | archive=0.00s | total=25.66s
+[2026-10-31 18:06:26] [INFO] [backtester] ═══ Cloud Strategy ExampleWeights01_DailySMATrend completed ═══
+
+============================================================
+  Strategy: ExampleWeights01_DailySMATrend
+  Backtester: v0.12.5
+  Period:   2000-01-03 → 2025-12-31
+  Assets:   XLB, XLE, XLF, XLI, XLK, XLP, XLU, XLV, XLY
+────────────────────────────────────────────────────────────
+  Initial NAV:  $    100,000.00
+  Final NAV:    $    636,954.57
+  Total Return:        536.95%
+  Ann. Volatility:      13.31%
+  Max Drawdown:        -34.68%
+  Sharpe Ratio:        0.4528
+────────────────────────────────────────────────────────────
+  Runtime Total:        25.66s
+  Data Fetch:            0.38s
+  Data Prep:             2.52s
+  Calculation:           0.73s
+  Reporting:            22.04s
+────────────────────────────────────────────────────────────
+  Rebalance Policy: RebalancePolicy(freq=D)
+  Rebalances:            6539
+  Avg Days Btw:           1.0
+============================================================
+

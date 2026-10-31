@@ -1,0 +1,61 @@
+[2026-10-31 18:05:00] [INFO] [backtester] [Backtester] Initialized: strategy=ExampleWeights25_ContinuousFuturesTrend, instruments=['MES=F', 'MNQ=F', 'ZN=F', 'CL=F', 'GC=F', 'ZC=F'], version=0.12.5, api=QuantJourney Cloud
+[2026-10-31 18:05:00] [INFO] [backtester] ═══ Running Cloud Strategy: ExampleWeights25_ContinuousFuturesTrend ═══
+[2026-10-31 18:05:00] [INFO] [backtester] [Backtester] Data reconstructed: 6 instruments, 1678 dates, prices cols=['open', 'high', 'low', 'close', 'adj_close', 'volume']
+[2026-10-31 18:05:00] [INFO] [backtester] [Rebalance] 81 rebalances (cal=81, drift=0, sig=0, cb=0) | avg 20.7 days between | policy=RebalancePolicy(freq=BME)
+[2026-10-31 18:05:01] [INFO] [backtester] Strategy folder set to: /home/user/quantjourney-bt_rp/Rishi_Research/results/example_weights_25_continuous_futures_trend/ExampleWeights25_ContinuousFuturesTrend
+[2026-10-31 18:05:01] [INFO] [backtester] Generating strategy performance analysis.
+[2026-10-31 18:05:01] [INFO] [backtester] Performance report saved to: /home/user/quantjourney-bt_rp/Rishi_Research/results/example_weights_25_continuous_futures_trend/ExampleWeights25_ContinuousFuturesTrend/performance_report.txt
+Section      Metric                     Value
+-----------  ----------------------  --------
+Return       Annualized Return          6.17%
+             Total Return              48.91%
+             MTD                       -0.10%
+             QTD                        2.48%
+             YTD                        5.46%
+             1Y                         5.46%
+             3Y Annualized              7.71%
+             5Y Annualized              7.70%
+Risk         Sharpe Ratio                0.98
+             Sortino Ratio               1.42
+             Max Drawdown              -9.93%
+             Calmar Ratio                0.62
+             Recovery Factor             0.62
+             Annualized Volatility      6.28%
+Consistency  Winning Days              47.14%
+             Winning Months            53.75%
+             Winning Quarters          59.26%
+             Winning Years             85.71%
+Trading      Average Daily Turnover     0.71%
+             Annualized Turnover      177.98%
+             Total Turnover          1185.11%
+
+[2026-10-31 18:05:14] [INFO] [backtester] [Backtester] Dashboard saved to /home/user/quantjourney-bt_rp/Rishi_Research/results/example_weights_25_continuous_futures_trend/ExampleWeights25_ContinuousFuturesTrend/dashboard.html
+[2026-10-31 18:05:14] [INFO] [backtester] [Backtester] Plot pack saved to /home/user/quantjourney-bt_rp/Rishi_Research/results/example_weights_25_continuous_futures_trend/ExampleWeights25_ContinuousFuturesTrend/plots (21 PNG files)
+[2026-10-31 18:05:14] [INFO] [backtester] Run metadata saved to /home/user/quantjourney-bt_rp/Rishi_Research/results/example_weights_25_continuous_futures_trend/ExampleWeights25_ContinuousFuturesTrend/run_metadata.json
+[2026-10-31 18:05:14] [INFO] [backtester] [Backtester] Runtime: fetch=0.13s | data=0.19s | calc=0.08s | reports=13.51s | archive=0.00s | total=13.91s
+[2026-10-31 18:05:14] [INFO] [backtester] ═══ Cloud Strategy ExampleWeights25_ContinuousFuturesTrend completed ═══
+
+============================================================
+  Strategy: ExampleWeights25_ContinuousFuturesTrend
+  Backtester: v0.12.5
+  Period:   2019-05-06 → 2025-12-31
+  Assets:   MES=F, MNQ=F, ZN=F, CL=F, GC=F, ZC=F
+────────────────────────────────────────────────────────────
+  Initial NAV:  $  1,000,000.00
+  Final NAV:    $  1,489,108.46
+  Total Return:         48.91%
+  Ann. Volatility:       6.28%
+  Max Drawdown:         -9.93%
+  Sharpe Ratio:        0.6659
+────────────────────────────────────────────────────────────
+  Runtime Total:        13.91s
+  Data Fetch:            0.13s
+  Data Prep:             0.19s
+  Calculation:           0.08s
+  Reporting:            13.51s
+────────────────────────────────────────────────────────────
+  Rebalance Policy: RebalancePolicy(freq=BME)
+  Rebalances:              81
+  Avg Days Btw:          20.7
+============================================================
+
