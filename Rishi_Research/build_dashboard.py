@@ -18,7 +18,8 @@ HERE = Path(__file__).resolve().parent
 RESULTS = HERE / "results"
 OUT = HERE / "dashboard" / "index.html"
 
-# code, folder, short name, idea, mode, universe, published (Sharpe, CAGR, MaxDD, total)
+# code, folder, name, idea, mode, universe,
+# published (Sharpe, CAGR %, Max DD %, total return %)
 STRATEGIES = [
     ("W25", "example_weights_25_continuous_futures_trend", "Continuous Futures Trend",
      "Long/short 6 futures when SMA(63) vs SMA(252) trend says so; inverse-vol sized; month-end",
@@ -97,7 +98,7 @@ def main() -> None:
                 "universe": universe,
                 "file": f"strategies/{folder}.py",
                 "engine": stats,
-                "published": dict(zip(("sharpe", "cagr", "maxdd", "total"), published)),
+                "published": dict(zip(("sharpe", "cagr", "maxdd", "total"), published, strict=True)),
                 "turnover": _metric(folder, "Annualized turnover"),
                 "holdings": holdings,
                 "holdings_date": str(pd.to_datetime(weights.index[-1]).date()),
@@ -119,7 +120,7 @@ def main() -> None:
         s = s[~s.index.duplicated()].reindex(index)
         start, end = series[code].index[0], series[code].index[-1]
         vals = []
-        for d, v in zip(index, s.values):
+        for d, v in zip(index, s.values, strict=True):
             if d < start or d > end:
                 vals.append(None)
             else:

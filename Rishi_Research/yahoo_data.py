@@ -183,6 +183,8 @@ if __name__ == "__main__":
 
     for sym in sys.argv[1:]:
         f = load_symbol(sym)
-        print(sym, f.index[0].date(), f.index[-1].date(), len(f), json.dumps(
-            {"nan_close": int(f["close"].isna().sum()), "last": float(np.round(f["close"].iloc[-1], 2))}
-        ))
+        info = {
+            "nan_close": int(f["close"].isna().sum()),
+            "last": float(np.round(f["close"].iloc[-1], 2)),
+        }
+        print(sym, f.index[0].date(), f.index[-1].date(), len(f), json.dumps(info))
